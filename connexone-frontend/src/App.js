@@ -49,18 +49,18 @@ function App() {
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '20px' }}>
+    <div className="main-container">
       {/* Left Side */}
-      <div className="w-1/2 bg-white p-8">
-        <h2 className="text-2xl mb-4">{data?.time?.description}</h2>
-        <p className="mb-8">{data?.time?.epoch}</p>
-        <h2 className="text-2xl mb-4">Difference:</h2>
+      <div>
+        <h2>{data?.time?.description}</h2>
+        <p>{data?.time?.epoch}</p>
+        <h2>Difference:</h2>
         <p>{new Date(timeDiff * 1000).toISOString().substring(11, 19)}</p>
       </div>
 
       {/* Right Side */}
-      <div className="w-1/2 bg-gray-200 p-8">
-        <pre>{metrics}</pre>
+      <div className="code-container">
+        <code>{metrics}</code>
       </div>
     </div>
   );
