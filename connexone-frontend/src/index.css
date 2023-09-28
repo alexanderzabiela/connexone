@@ -10,10 +10,10 @@ body {
 h2 {
   font-weight: bold;
   margin-top: 10px;
+  font-size: medium;
 }
 
 .main-container {
-  font-size: medium;
   display: flex;
   padding: 20px;
   justify-content: space-between, 
