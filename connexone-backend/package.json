@@ -2,9 +2,11 @@
   "name": "connexone-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "babel-node server.js",
+    "dev": "babel-node server.js"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +19,12 @@
     "express-prometheus-middleware": "^1.2.0",
     "graphql": "^15.8.0",
     "node-fetch": "^3.3.2",
-    "prom-client": "^14.2.0"
+    "prom-client": "^13.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.22.15",
+    "@babel/core": "^7.22.20",
+    "@babel/node": "^7.22.19",
+    "@babel/preset-env": "^7.22.20"
   }
 }

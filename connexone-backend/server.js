@@ -1,13 +1,13 @@
-const express = require('express');
-const { ApolloServer, gql } = require('apollo-server-express');
-const cors = require('cors');
-const promMiddleware = require('express-prometheus-middleware');
+import express from 'express';
+import { ApolloServer, gql } from 'apollo-server-express';
+import cors from 'cors';
+import promMiddleware from 'express-prometheus-middleware';
 
 const app = express();
 
 // Use CORS middleware before other middlewares
 app.use(cors({
-    origin: 'http://localhost:3001', // adjust this if your front-end is hosted on a different domain
+    origin: 'http://localhost:3000', // adjust this if your front-end is hosted on a different domain
     credentials: true,
   }));
 
@@ -48,8 +48,8 @@ const server = new ApolloServer({
   await server.start();
   server.applyMiddleware({ app, path: '/graphql' });
 
-  app.listen({ port: 4001 }, () => {
-    console.log(`Server ready at http://localhost:4001${server.graphqlPath}`);
-    console.log('Metrics available at http://localhost:4001/metrics');
+  app.listen({ port: 4000 }, () => {
+    console.log(`Server ready at http://localhost:4000${server.graphqlPath}`);
+    console.log('Metrics available at http://localhost:4000/metrics');
   });
 })();

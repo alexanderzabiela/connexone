@@ -3,7 +3,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider, useQuery, gql } from '@apo
 
 // Initialize Apollo Client
 const client = new ApolloClient({
-  uri: 'http://localhost:4001/graphql',
+  uri: 'http://localhost:4000/graphql',
   headers: {
     authorization: 'mysecrettoken'
   },
@@ -26,7 +26,7 @@ function App() {
 
   useEffect(() => {
     const fetchMetrics = async () => {
-      const metricsResponse = await fetch('http://localhost:4001/metrics', {
+      const metricsResponse = await fetch('http://localhost:4000/metrics', {
         headers: { 'Authorization': 'mysecrettoken' }
       });
       const metricsData = await metricsResponse.text();
