@@ -49,7 +49,7 @@ function App() {
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '20px' }}>
       {/* Left Side */}
       <div className="w-1/2 bg-white p-8">
         <h2 className="text-2xl mb-4">{data?.time?.description}</h2>
