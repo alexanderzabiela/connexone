@@ -12,20 +12,33 @@ const client = new ApolloClient({
 
 const FETCH_EPOCH = gql`
   query GetEpoch {
-    epoch
-    metrics
+    time {
+      epoch
+      description
+    }
   }
 `;
 
 function App() {
   const [timeDiff, setTimeDiff] = useState(0);
-  const { data, loading, error, refetch } = useQuery(FETCH_EPOCH, { pollInterval: 30000 }); 
+  const [metrics, setMetrics] = useState(null);
+  const { data, loading, error } = useQuery(FETCH_EPOCH, { pollInterval: 30000 });
 
   useEffect(() => {
+    const fetchMetrics = async () => {
+      const metricsResponse = await fetch('http://localhost:4001/metrics', {
+        headers: { 'Authorization': 'mysecrettoken' }
+      });
+      const metricsData = await metricsResponse.text();
+      setMetrics(metricsData);
+    };
+
+    fetchMetrics();
+
     const interval = setInterval(() => {
-      if (data?.epoch) {
+      if (data?.time?.epoch) {
         const currentClientTime = Date.now() / 1000;
-        setTimeDiff(Math.floor(currentClientTime - data.epoch));
+        setTimeDiff(Math.floor(currentClientTime - data.time.epoch));
       }
     }, 1000);
 
@@ -39,17 +52,15 @@ function App() {
     <div className="flex h-screen bg-gray-100">
       {/* Left Side */}
       <div className="w-1/2 bg-white p-8">
-        <h2 className="text-2xl mb-4">Server Time (Epoch):</h2>
-        <p className="mb-8">{data?.epoch}</p>
+        <h2 className="text-2xl mb-4">{data?.time?.description}</h2>
+        <p className="mb-8">{data?.time?.epoch}</p>
         <h2 className="text-2xl mb-4">Difference:</h2>
         <p>{new Date(timeDiff * 1000).toISOString().substring(11, 19)}</p>
       </div>
 
       {/* Right Side */}
       <div className="w-1/2 bg-gray-200 p-8">
-        {/* Metrics display logic will go here once you have the /metrics endpoint */}
-        {/* For now, just an example */}
-        <pre>{data?.metrics} hello</pre>
+        <pre>{metrics}</pre>
       </div>
     </div>
   );

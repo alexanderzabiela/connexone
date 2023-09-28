@@ -1,50 +1,55 @@
-const { ApolloServer, gql } = require('apollo-server-express');
 const express = require('express');
-const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core');
-const http = require('http');
+const { ApolloServer, gql } = require('apollo-server-express');
+const cors = require('cors');
+const promMiddleware = require('express-prometheus-middleware');
 
 const app = express();
 
-// Construct a schema, using GraphQL schema language
+// Use CORS middleware before other middlewares
+app.use(cors({
+    origin: 'http://localhost:3001', // adjust this if your front-end is hosted on a different domain
+    credentials: true,
+  }));
+
+// Setting up Prometheus middleware
+app.use(promMiddleware({
+  metricsPath: '/metrics',
+  collectDefaultMetrics: true
+}));
+
+// GraphQL type definitions and resolvers
 const typeDefs = gql`
   type Query {
+    time: TimeData!
+  }
+
+  type TimeData {
     epoch: Float!
-    metrics: String!
+    description: String!
   }
 `;
 
-// Provide resolver functions for your schema fields
 const resolvers = {
   Query: {
-    epoch: () => Date.now() / 1000,
-    metrics: () => 'Your_Prometheus_Metrics_Here',  // Replace this with your actual metrics data
+    time: () => ({
+      epoch: Date.now() / 1000,
+      description: "The current server time, in epoch seconds, at time of processing the request."
+    }),
   },
 };
 
-// Start Apollo Server
-async function startApolloServer(typeDefs, resolvers) {
-  const httpServer = http.createServer(app);
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-  });
-  
+const server = new ApolloServer({
+  typeDefs,
+  resolvers
+});
+
+// Start the Apollo Server and apply middleware
+(async () => {
   await server.start();
-
-  // Apply the Apollo app to our express server
   server.applyMiddleware({ app, path: '/graphql' });
-  
-  // Handle CORS issues
-  app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    next();
-  });
 
-  httpServer.listen({ port: 4001 }, () => {
-    console.log(`🚀 Server ready at http://localhost:4001${server.graphqlPath}`);
+  app.listen({ port: 4001 }, () => {
+    console.log(`Server ready at http://localhost:4001${server.graphqlPath}`);
+    console.log('Metrics available at http://localhost:4001/metrics');
   });
-}
-
-startApolloServer(typeDefs, resolvers);
+})();

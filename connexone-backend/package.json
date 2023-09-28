@@ -10,11 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@bmatei/apollo-prometheus-exporter": "^2.1.1",
     "apollo-server-express": "^3.12.1",
     "express": "^4.18.2",
     "express-graphql": "^0.12.0",
     "express-prometheus-middleware": "^1.2.0",
     "graphql": "^15.8.0",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "prom-client": "^14.2.0"
   }
 }
