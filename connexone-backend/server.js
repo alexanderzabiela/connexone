@@ -1,34 +1,50 @@
-import express from 'express';
-import { graphqlHTTP } from 'express-graphql';
-import { buildSchema } from 'graphql';
-import promMiddleware from 'express-prometheus-middleware';
-
-const schema = buildSchema(`
-    type Query {
-        epoch: Float!
-    }
-`);
-
-const rootValue = {
-    epoch: () => Date.now() / 1000,
-};
+const { ApolloServer, gql } = require('apollo-server-express');
+const express = require('express');
+const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core');
+const http = require('http');
 
 const app = express();
 
-// Prometheus middleware
-app.use(promMiddleware({
-    metricsPath: '/metrics',
-    collectDefaultMetrics: true,
-    requestDurationBuckets: [0.1, 0.5, 1, 1.5],
-}));
+// Construct a schema, using GraphQL schema language
+const typeDefs = gql`
+  type Query {
+    epoch: Float!
+    metrics: String!
+  }
+`;
 
-// GraphQL endpoint
-app.use('/graphql', graphqlHTTP({
-    schema,
-    rootValue,
-    graphiql: true,
-}));
+// Provide resolver functions for your schema fields
+const resolvers = {
+  Query: {
+    epoch: () => Date.now() / 1000,
+    metrics: () => 'Your_Prometheus_Metrics_Here',  // Replace this with your actual metrics data
+  },
+};
 
-app.listen(4001, () => {
-    console.log('Server running at http://localhost:4000/graphql');
-});
+// Start Apollo Server
+async function startApolloServer(typeDefs, resolvers) {
+  const httpServer = http.createServer(app);
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  });
+  
+  await server.start();
+
+  // Apply the Apollo app to our express server
+  server.applyMiddleware({ app, path: '/graphql' });
+  
+  // Handle CORS issues
+  app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    next();
+  });
+
+  httpServer.listen({ port: 4001 }, () => {
+    console.log(`🚀 Server ready at http://localhost:4001${server.graphqlPath}`);
+  });
+}
+
+startApolloServer(typeDefs, resolvers);

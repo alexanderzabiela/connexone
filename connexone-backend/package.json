@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,9 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "apollo-server-express": "^3.12.1",
     "express": "^4.18.2",
     "express-graphql": "^0.12.0",
     "express-prometheus-middleware": "^1.2.0",
-    "graphql": "^15.8.0"
+    "graphql": "^15.8.0",
+    "node-fetch": "^3.3.2"
   }
 }
